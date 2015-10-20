@@ -1,0 +1,19 @@
+﻿@model ColorBlindTestGenerator.Models.IndexViewModel
+@{
+    ViewBag.Title = "Home Page";
+}
+
+@using (Html.BeginForm()){
+    <div>
+        <input name="line" type="text" value="test"/><br/>
+        <input type="radio" name="type" value="red" checked="checked"/>Red Test<br/>
+        <input type="radio" name="type" value="green"/>Green Test<br/>
+        <input type="submit"/>
+        @if (Model != null)
+        {
+            var base64 = Convert.ToBase64String(Model.ImageByteArray);
+            var imgSrc = $"data:image/png;base64,{base64}";
+            <img src="@imgSrc" alt="Generate an image."/>
+        }
+    </div>
+}
