@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Text;
+using TuckersToolbox;
 
 namespace ColorBlindTestGenerator.Models
 {
@@ -42,40 +42,44 @@ namespace ColorBlindTestGenerator.Models
             using (var g = Graphics.FromImage(image))
             {
                 g.TextRenderingHint = TextRenderingHint.AntiAlias;
-                g.DrawString(line, new Font("Tahoma", 26, FontStyle.Bold), new SolidBrush(color), x, y);
+                g.DrawString(line, new Font("Tahoma", 30, FontStyle.Bold), new SolidBrush(color), x, y);
             }
         }
 
         public static void DrawPattern(this Bitmap image)
         {
-            var rng = new Random();
+            var shadeBatch = new ShadeBatch();
             for (var y = 0; y < image.Height; y++)
-            {
-                Debug.WriteLine(y);
-                var batch = new Batch(rng);
                 for (var x = 0; x < image.Width; x++)
-                {
-                    if (batch.Size == 0)
-                        batch = new Batch(rng);
-
                     image.SetPixel(x, y,
-                        Colors[image.GetPixel(x, y).Name.ToColorGroup(), batch.Color]);
-
-                    batch.Size--;
-                }
-            }
+                        Colors[image.GetPixel(x, y).Name.ToColorGroup(), shadeBatch.Next()]);
         }
 
-        private class Batch
+        private class ShadeBatch
         {
-            public Batch(Random rng)
+            public ShadeBatch()
             {
-                Color = (ColorShade) rng.Next(1, 3);
-                Size = rng.Next(1, 6);
+                Random = new Random();
+                NewBatch();
             }
 
-            public ColorShade Color { get; }
-            public int Size { get; set; }
+            private void NewBatch()
+            {
+                Color = (ColorShade)Random.Next(1, 3);
+                Size = Random.Next(1, 6);
+            }
+
+            public ColorShade Next()
+            {
+                if (Size-- == 0)
+                    NewBatch();
+
+                return Color;
+            }
+
+            private ColorShade Color { get; set; }
+            private int Size { get; set; }
+            private Random Random { get; }
         }
 
         private static ColorGroup ToColorGroup(this string name)
@@ -83,37 +87,6 @@ namespace ColorBlindTestGenerator.Models
             return ColorGroups.ContainsKey(name)
                 ? ColorGroups[name]
                 : ColorGroup.Background;
-        }
-
-        public class MultiKeyDictionary<TKey1, TKey2, TValue> : Dictionary<TKey1, TValue>
-        {
-            private Dictionary<Tuple<TKey1, TKey2>, TValue> _innerDictionary;
-
-            public MultiKeyDictionary()
-            {
-                _innerDictionary = new Dictionary<Tuple<TKey1, TKey2>, TValue>();
-            }
-
-            public void Add(TKey1 key1, TKey2 key2, TValue value)
-            {
-                _innerDictionary.Add(new Tuple<TKey1, TKey2>(key1, key2), value);
-            }
-
-            private TValue GetValue(TKey1 key1, TKey2 key2)
-            {
-                return _innerDictionary[new Tuple<TKey1, TKey2>(key1, key2)];
-            }
-
-            private void SetValue(TKey1 key1, TKey2 key2, TValue value)
-            {
-                _innerDictionary[new Tuple<TKey1, TKey2>(key1, key2)] = value;
-            }
-
-            public TValue this[TKey1 key1, TKey2 key2]
-            {
-                get { return GetValue(key1, key2); }
-                set { SetValue(key1, key2, value); }
-            }
         }
 
         private enum ColorGroup

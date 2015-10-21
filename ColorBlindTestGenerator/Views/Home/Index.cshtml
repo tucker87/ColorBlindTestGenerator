@@ -1,18 +1,28 @@
-﻿@model ColorBlindTestGenerator.Models.IndexViewModel
-@{
-    ViewBag.Title = "Home Page";
-}
+﻿@*Move me!*@
+<style>
+    .padded {
+        padding: 10px;
+    }
+</style>
 
-@using (Html.BeginForm()){
-    <div>
-        <input name="greenText" type="text" value="Green Text"/><br/>
-        <input name="redText" type="text" value="Red Text"/><br/>
-        <input type="submit"/>
-        @if (Model != null)
-        {
-            var base64 = Convert.ToBase64String(Model.ImageByteArray);
-            var imgSrc = $"data:image/png;base64,{base64}";
-            <img src="@imgSrc" alt="Generate an image."/>
-        }
-    </div>
-}
+
+<h2>CVD Test Generator</h2>
+<div>
+    <div class="padded"><input id="greenText" type="text" value="Green Text" /></div>
+    <div class="padded"><input id="redText" type="text" value="Red Text" /></div>
+    <div class="padded"><input type="button" name="submit" onclick="getImage();" value="Submit" /></div>
+    <div id="divResult" class="padded"></div>
+</div>
+
+<script type="text/javascript">
+    function getImage() {
+        var link = [];
+        link.push(
+            '@Url.Action("GetImage")',
+            '?greenText=' + encodeURIComponent($('#greenText').val()),
+            '&redText=' + encodeURIComponent($('#redText').val())
+        );
+
+        $('#divResult').html('<img src="' + link.join("") + '" alt="Oops" />');
+    }
+</script>
