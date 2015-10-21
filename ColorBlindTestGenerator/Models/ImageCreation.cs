@@ -1,106 +1,133 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Text;
-using System.Security.Cryptography.X509Certificates;
 
 namespace ColorBlindTestGenerator.Models
 {
     public static class ImageCreation
     {
-        private static Dictionary<ColorType, Color> Colors => new Dictionary<ColorType, Color>
+        private static MultiKeyDictionary<ColorGroup, ColorShade, Color> Colors => new MultiKeyDictionary<ColorGroup, ColorShade, Color>
         {
-            {ColorType.BackgroundLight, Color.FromArgb(149, 149, 149)},
-            {ColorType.BackgroundDark, Color.FromArgb(114, 114, 114)},
-            {ColorType.GreenDark, Color.FromArgb(165, 82, 117)},
-            {ColorType.GreenLight, Color.FromArgb(215, 107, 152)},
-            {ColorType.RedDark, Color.FromArgb(195, 97, 115)},
-            {ColorType.RedLight, Color.FromArgb(254, 127, 150)},
-            {ColorType.TextDark, Color.FromArgb(195, 136, 147)},
-            {ColorType.TextLight, Color.FromArgb(215, 150, 177)}
+            {ColorGroup.Background, ColorShade.Dark, Color.FromArgb(114, 114, 114)},
+            {ColorGroup.Background, ColorShade.Light, Color.FromArgb(149, 149, 149)},
+            {ColorGroup.Green, ColorShade.Dark, Color.FromArgb(165, 82, 117)},
+            {ColorGroup.Green, ColorShade.Light, Color.FromArgb(215, 107, 152)},
+            {ColorGroup.Red, ColorShade.Dark, Color.FromArgb(195, 97, 115)},
+            {ColorGroup.Red, ColorShade.Light, Color.FromArgb(254, 127, 150)},
+            {ColorGroup.Text, ColorShade.Dark, Color.FromArgb(195, 136, 147)},
+            {ColorGroup.Text, ColorShade.Light, Color.FromArgb(215, 150, 177)}
+        };
+
+        private static Dictionary<string, ColorGroup> ColorGroups => new Dictionary<string, ColorGroup>
+        {
+            {"ffff0000", ColorGroup.Red},
+            {"ff008000", ColorGroup.Green}
         };
 
         public static Bitmap Image { get; private set; }
         
-        public static Bitmap CreateImage(string line, TestType type)
+        public static Bitmap CreateImage(string greenText, string redText)
         {
-            Image = new Bitmap(392, 42);
-
-            Image.DrawLine(line, type == TestType.Red ? Color.Red : Color.Green);
-
-            Image.DrawBackground();
-            
+            Image = new Bitmap(392, 100);
+            Image.DrawText(greenText, Color.Green, 0, 0);
+            Image.DrawText(redText, Color.Red, 0, 50);
+            Image.DrawPattern();
             return Image;
         }
 
-        public static Bitmap DrawBackground(this Bitmap image)
-        {
-            var rng = new Random();
-            {
-                for (var y = 0; y < image.Height; y++)
-                {
-                    var x = 0;
-                    while (x < image.Width)
-                    {
-                        var batch = rng.Next(1, 6);
-                        var isDark = rng.Next(1, 3) == 1;
-
-                        while (batch > 0 && x < image.Width)
-                        {
-                            var currentPixel = image.GetPixel(x, y);
-                            if (currentPixel.R > 0 || currentPixel.G > 0 || currentPixel.B > 0)
-                                Console.WriteLine();
-
-                            Color color;
-                            switch (currentPixel.Name)
-                            {
-                                case "ffff0000":
-                                    color = isDark
-                                    ? Colors[ColorType.RedDark]
-                                    : Colors[ColorType.RedLight];
-                                    break;
-                                case "ff008000":
-                                    color = isDark
-                                    ? Colors[ColorType.GreenDark]
-                                    : Colors[ColorType.GreenLight];
-                                    break;
-                                default:
-                                    color = isDark
-                                ? Colors[ColorType.BackgroundDark]
-                                : Colors[ColorType.BackgroundLight];
-                                    break;
-                            }
-                            image.SetPixel(x, y, color);
-                            x++;
-                            batch--;
-                        }
-                    }
-                }
-            }
-
-            return image;
-        }
-
-        public static Bitmap DrawLine(this Bitmap image, string line, Color color)
+        private static void DrawText(this Image image, string line, Color color, int x, int y)
         {
             using (var g = Graphics.FromImage(image))
             {
                 g.TextRenderingHint = TextRenderingHint.AntiAlias;
-                g.DrawString(line, new Font("Tahoma", 22), new SolidBrush(color), 0, 0);
-                return image;
+                g.DrawString(line, new Font("Tahoma", 26, FontStyle.Bold), new SolidBrush(color), x, y);
             }
         }
 
-        private enum ColorType
+        public static void DrawPattern(this Bitmap image)
         {
-            BackgroundLight,
-            BackgroundDark,
-            GreenDark,
-            GreenLight,
-            RedDark,
-            RedLight,
-            TextDark,
-            TextLight
+            var rng = new Random();
+            for (var y = 0; y < image.Height; y++)
+            {
+                Debug.WriteLine(y);
+                var batch = new Batch(rng);
+                for (var x = 0; x < image.Width; x++)
+                {
+                    if (batch.Size == 0)
+                        batch = new Batch(rng);
+
+                    image.SetPixel(x, y,
+                        Colors[image.GetPixel(x, y).Name.ToColorGroup(), batch.Color]);
+
+                    batch.Size--;
+                }
+            }
+        }
+
+        private class Batch
+        {
+            public Batch(Random rng)
+            {
+                Color = (ColorShade) rng.Next(1, 3);
+                Size = rng.Next(1, 6);
+            }
+
+            public ColorShade Color { get; }
+            public int Size { get; set; }
+        }
+
+        private static ColorGroup ToColorGroup(this string name)
+        {
+            return ColorGroups.ContainsKey(name)
+                ? ColorGroups[name]
+                : ColorGroup.Background;
+        }
+
+        public class MultiKeyDictionary<TKey1, TKey2, TValue> : Dictionary<TKey1, TValue>
+        {
+            private Dictionary<Tuple<TKey1, TKey2>, TValue> _innerDictionary;
+
+            public MultiKeyDictionary()
+            {
+                _innerDictionary = new Dictionary<Tuple<TKey1, TKey2>, TValue>();
+            }
+
+            public void Add(TKey1 key1, TKey2 key2, TValue value)
+            {
+                _innerDictionary.Add(new Tuple<TKey1, TKey2>(key1, key2), value);
+            }
+
+            private TValue GetValue(TKey1 key1, TKey2 key2)
+            {
+                return _innerDictionary[new Tuple<TKey1, TKey2>(key1, key2)];
+            }
+
+            private void SetValue(TKey1 key1, TKey2 key2, TValue value)
+            {
+                _innerDictionary[new Tuple<TKey1, TKey2>(key1, key2)] = value;
+            }
+
+            public TValue this[TKey1 key1, TKey2 key2]
+            {
+                get { return GetValue(key1, key2); }
+                set { SetValue(key1, key2, value); }
+            }
+        }
+
+        private enum ColorGroup
+        {
+            Background,
+            Green,
+            Red,
+            Text
+        }
+
+        private enum ColorShade
+        {
+            Dark = 1,
+            Light = 2
         }
 
         public enum TestType

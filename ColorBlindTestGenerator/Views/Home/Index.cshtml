@@ -5,9 +5,8 @@
 
 @using (Html.BeginForm()){
     <div>
-        <input name="line" type="text" value="test"/><br/>
-        <input type="radio" name="type" value="red" checked="checked"/>Red Test<br/>
-        <input type="radio" name="type" value="green"/>Green Test<br/>
+        <input name="greenText" type="text" value="Green Text"/><br/>
+        <input name="redText" type="text" value="Red Text"/><br/>
         <input type="submit"/>
         @if (Model != null)
         {

@@ -12,9 +12,9 @@ namespace ColorBlindTestGenerator.Controllers
         }
 
         [HttpPost]
-        public ActionResult Index(string line, string type)
+        public ActionResult Index(string greenText, string redText)
         {
-            var image = ImageCreation.CreateImage(line, (ImageCreation.TestType) Enum.Parse(typeof(ImageCreation.TestType), type, true));
+            var image = ImageCreation.CreateImage(greenText, redText);
             var model = new IndexViewModel(image);
             return View(model);
         }
