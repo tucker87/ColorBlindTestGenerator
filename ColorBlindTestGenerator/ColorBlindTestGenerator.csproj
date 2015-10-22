@@ -126,8 +126,10 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\ColorDataTypes.cs" />
     <Compile Include="Models\ImageCreation.cs" />
     <Compile Include="Models\IndexViewModel.cs" />
+    <Compile Include="Models\ShadeBatch.cs" />
     <Compile Include="Models\TextDataModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
