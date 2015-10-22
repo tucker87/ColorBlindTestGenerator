@@ -12,10 +12,12 @@ namespace ColorBlindTestGenerator.Models
         {
             {ColorGroup.Background, ColorShade.Dark, Color.FromArgb(114, 114, 114)},
             {ColorGroup.Background, ColorShade.Light, Color.FromArgb(149, 149, 149)},
-            {ColorGroup.Green, ColorShade.Dark, Color.FromArgb(165, 82, 117)},
-            {ColorGroup.Green, ColorShade.Light, Color.FromArgb(215, 107, 152)},
             {ColorGroup.Red, ColorShade.Dark, Color.FromArgb(195, 97, 115)},
             {ColorGroup.Red, ColorShade.Light, Color.FromArgb(254, 127, 150)},
+            {ColorGroup.Green, ColorShade.Dark, Color.FromArgb(165, 82, 117)},
+            {ColorGroup.Green, ColorShade.Light, Color.FromArgb(215, 107, 152)},
+            {ColorGroup.Blue, ColorShade.Dark, Color.FromArgb(126,104,177)},
+            {ColorGroup.Blue, ColorShade.Light, Color.FromArgb(171,155,200)},
             {ColorGroup.Text, ColorShade.Dark, Color.FromArgb(195, 136, 147)},
             {ColorGroup.Text, ColorShade.Light, Color.FromArgb(215, 150, 177)}
         };
@@ -23,16 +25,18 @@ namespace ColorBlindTestGenerator.Models
         private static Dictionary<string, ColorGroup> ColorGroups => new Dictionary<string, ColorGroup>
         {
             {"ffff0000", ColorGroup.Red},
-            {"ff008000", ColorGroup.Green}
+            {"ff008000", ColorGroup.Green},
+            {"ff0000ff", ColorGroup.Blue}
         };
 
         public static Bitmap Image { get; private set; }
         
         public static Bitmap CreateImage(string greenText, string redText)
         {
-            Image = new Bitmap(392, 100);
+            Image = new Bitmap(392, 150);
             Image.DrawText(greenText, Color.Green, 0, 0);
             Image.DrawText(redText, Color.Red, 0, 50);
+            Image.DrawText("Blue Test", Color.Blue, 0, 100);
             Image.DrawPattern();
             return Image;
         }
@@ -94,7 +98,8 @@ namespace ColorBlindTestGenerator.Models
             Background,
             Green,
             Red,
-            Text
+            Text,
+            Blue
         }
 
         private enum ColorShade
