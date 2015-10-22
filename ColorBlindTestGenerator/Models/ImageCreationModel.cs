@@ -6,7 +6,7 @@ using TuckersToolbox;
 
 namespace ColorBlindTestGenerator.Models
 {
-    public static class ImageCreation
+    public static class ImageCreationModel
     {
         private static MultiKeyDictionary<ColorGroup, ColorShade, Color> Colors => new MultiKeyDictionary<ColorGroup, ColorShade, Color>
         {
@@ -31,12 +31,17 @@ namespace ColorBlindTestGenerator.Models
 
         public static Bitmap Image { get; private set; }
         
-        public static Bitmap CreateImage(string greenText, string redText)
+        public static Bitmap CreateImage(List<TextDataModel> textData)
         {
-            Image = new Bitmap(392, 150);
-            Image.DrawText(greenText, Color.Green, 0, 0);
-            Image.DrawText(redText, Color.Red, 0, 50);
-            Image.DrawText("Blue Test", Color.Blue, 0, 100);
+            const int lineHeight = 50;
+            var currentLineHeight = 0;
+
+            Image = new Bitmap(392, textData.Count * lineHeight);
+            foreach (var textItem in textData)
+            {
+                Image.DrawText(textItem.Text, Color.FromName(textItem.Color), 0, currentLineHeight);
+                currentLineHeight += lineHeight;
+            }
             Image.DrawPattern();
             return Image;
         }

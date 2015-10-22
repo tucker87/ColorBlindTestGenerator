@@ -1,8 +1,10 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Web.Mvc;
 using ColorBlindTestGenerator.Models;
+using Newtonsoft.Json;
 
 namespace ColorBlindTestGenerator.Controllers
 {
@@ -13,9 +15,11 @@ namespace ColorBlindTestGenerator.Controllers
             return View();
         }
         
-        public ActionResult GetImage(string greenText, string redText)
+        public ActionResult GetImage(string data)
         {
-            return new FileStreamResult(ImageCreation.CreateImage(greenText, redText).SaveToStream(), "image/png");
+            var textData = JsonConvert.DeserializeObject<List<TextDataModel>>(data);
+
+            return new FileStreamResult(ImageCreationModel.CreateImage(textData).SaveToStream(), "image/png");
         }
     }
 

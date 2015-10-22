@@ -4,29 +4,63 @@
 
 @*Move me!*@
 <style>
-    .padded {
-        padding: 10px;
+    .margined {
+        margin: 10px;
     }
 </style>
 
 
 <h2>CVD Test Generator</h2>
 <div>
-    <div class="padded"><input id="greenText" type="text" value="Green Test" /></div>
-    <div class="padded"><input id="redText" type="text" value="Red Test" /></div>
-    <div class="padded"><input type="button" name="submit" onclick="getImage();" value="Submit" /></div>
-    <div id="divResult" class="padded"></div>
+    <div id="options">
+
+    </div>
+    <div class="margined">
+        <input type="button" onclick="addOption()" value="  +  "/>
+    </div>
+    <div class="margined">
+        <input type="button" onclick="getImage();" value="Submit" />
+    </div>
+    <div id="divResult" class="margined"></div>
 </div>
 
-<script type="text/javascript">
-    function getImage() {
-        var link = [];
-        link.push(
-            '@Url.Action("GetImage")',
-            '?greenText=' + encodeURIComponent($('#greenText').val()),
-            '&redText=' + encodeURIComponent($('#redText').val())
-        );
 
-        $('#divResult').html('<img src="' + link.join("") + '" alt="Oops" />');
-    }
-</script>
+@section scripts
+{
+    <script type="text/javascript">
+        function getImage() {
+            var textData = [];
+            var inputDivs = $('#options').children();
+            $.each(inputDivs, function(i, div) {
+                textData.push({ text: $(div).children('input').val(), color: $(div).children('select').val() });
+            });
+
+            var link = '@Url.Action("GetImage")' + '?data=' + encodeURI(JSON.stringify(textData));
+
+            $('#divResult').html('<img src="' + link + '" alt="Oops" />');
+        }
+
+        var inputId = 1;
+
+        function addOption() {
+            $('#options').append(
+                $('<div class="margined"></div>')
+                .append($('<input type="text" class="margined" value="New Test"/>').prop('id', "textBox" + inputId))
+                .append($('<select>' +
+                        '<option>Red</option></option>' +
+                        '<option>Green</option></option>' +
+                        '<option>Blue</option></option>' +
+                        '<option value="Black">Plain</option>' +
+                        '</select>').prop('id', 'selectBox' + inputId)
+                )
+            );
+            inputId++;
+        }
+
+        addOption();
+        addOption();
+        $('#textBox1').val('Red Test');
+        $('#textBox2').val('Green Test');
+        $('#selectBox2').val('Green');
+    </script>
+}
