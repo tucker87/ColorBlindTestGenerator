@@ -19,7 +19,7 @@ namespace ColorBlindTestGenerator.Controllers
         {
             var textData = JsonConvert.DeserializeObject<List<TextDataModel>>(data);
 
-            return new FileStreamResult(ImageCreationModel.CreateImage(textData).SaveToStream(), "image/png");
+            return new FileStreamResult(ImageCreation.CreateImage(textData).SaveToStream(), "image/png");
         }
     }
 

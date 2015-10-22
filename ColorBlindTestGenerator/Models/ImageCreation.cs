@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Text;
 using TuckersToolbox;
 
 namespace ColorBlindTestGenerator.Models
 {
-    public static class ImageCreationModel
+    public static class ImageCreation
     {
         private static MultiKeyDictionary<ColorGroup, ColorShade, Color> Colors => new MultiKeyDictionary<ColorGroup, ColorShade, Color>
         {
@@ -26,7 +27,8 @@ namespace ColorBlindTestGenerator.Models
         {
             {"ffff0000", ColorGroup.Red},
             {"ff008000", ColorGroup.Green},
-            {"ff0000ff", ColorGroup.Blue}
+            {"ff0000ff", ColorGroup.Blue},
+            {"ff000000", ColorGroup.Text}
         };
 
         public static Bitmap Image { get; private set; }
