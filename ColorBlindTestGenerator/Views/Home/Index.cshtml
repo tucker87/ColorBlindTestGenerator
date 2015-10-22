@@ -1,4 +1,8 @@
-﻿@*Move me!*@
+﻿@{
+    ViewBag.Title = "CVD Test Generator";
+}
+
+@*Move me!*@
 <style>
     .padded {
         padding: 10px;
@@ -8,8 +12,8 @@
 
 <h2>CVD Test Generator</h2>
 <div>
-    <div class="padded"><input id="greenText" type="text" value="Green Text" /></div>
-    <div class="padded"><input id="redText" type="text" value="Red Text" /></div>
+    <div class="padded"><input id="greenText" type="text" value="Green Test" /></div>
+    <div class="padded"><input id="redText" type="text" value="Red Test" /></div>
     <div class="padded"><input type="button" name="submit" onclick="getImage();" value="Submit" /></div>
     <div id="divResult" class="padded"></div>
 </div>
