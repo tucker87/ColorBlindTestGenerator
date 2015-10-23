@@ -18,6 +18,12 @@ namespace ColorBlindTestGenerator.Controllers
         public ActionResult GetImage(string data)
         {
             var textData = JsonConvert.DeserializeObject<List<TextDataModel>>(data);
+            if (textData.Count == 0)
+                textData = new List<TextDataModel>
+                {
+                    new TextDataModel {Color = "Black", Text = "No options selected!"},
+                    new TextDataModel {Color = "Black", Text = "Are you trying to break it?"}
+                };
 
             return new FileStreamResult(ImageCreation.CreateImage(textData).SaveToStream(), "image/png");
         }
