@@ -12,7 +12,7 @@ namespace ColorBlindTestGenerator.Models
             const int lineHeight = 50;
             var currentLineHeight = 0;
 
-            Image = new Bitmap(392, textData.Count * lineHeight);
+            Image = new Bitmap(550, textData.Count * lineHeight);
             foreach (var textItem in textData)
             {
                 Image.DrawText(textItem.Text, Color.FromName(textItem.Color), 0, currentLineHeight);

@@ -7,22 +7,31 @@
     .margined {
         margin: 10px;
     }
+    #divSetup {
+        display: inline-block;
+    }
+    #divResult {
+        display: inline-block;
+        vertical-align: top;
+    }
 </style>
 
 
 <h2>CVD Test Generator</h2>
-<div>
+<div id="divSetup">
     <div id="options">
 
     </div>
     <div class="margined">
         <input type="button" onclick="addOption()" value="  +  "/>
-    </div>
-    <div class="margined">
         <input type="button" onclick="getImage();" value="Submit" />
     </div>
-    <div id="divResult" class="margined"></div>
+    <div class="margined">
+        
+    </div>
 </div>
+<div id="divResult" class="margined"></div>
+
 
 
 @section scripts
@@ -44,18 +53,19 @@
 
         function addOption() {
             $('#options').append(
-                $('<div class="margined"></div>')
+                $('<div class="margined"></div>').prop('id', 'option' + inputId)
                 .append($('<input type="text" class="margined" value="New Test"/>').prop('id', "textBox" + inputId))
                 .append($('<select>' +
-                        '<option>Red</option></option>' +
-                        '<option>Green</option></option>' +
-                        '<option>Blue</option></option>' +
-                        '<option value="Black">Plain</option>' +
-                        '</select>').prop('id', 'selectBox' + inputId)
-                )
-            );
-            inputId++;
-        }
+                    '<option>Red</option></option>' +
+                    '<option>Green</option></option>' +
+                    '<option>Blue</option></option>' +
+                    '<option value="Black">Plain</option>' +
+                    '</select>').prop('id', 'selectBox' + inputId))
+                .append($('<input type="button" "class="margined" value="  -  "/>')
+                    .click({ inputId: inputId }, function (e) { $('#option' + e.data.inputId).remove(); }))
+        );
+        inputId++;
+    }
 
         addOption();
         addOption();
