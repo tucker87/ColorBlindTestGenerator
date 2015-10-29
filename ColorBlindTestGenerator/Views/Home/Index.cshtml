@@ -14,6 +14,10 @@
         display: inline-block;
         vertical-align: top;
     }
+    .form-control {
+        display: inline-block;
+        width: inherit;
+    }
 </style>
 
 
@@ -23,8 +27,8 @@
 
     </div>
     <div class="margined">
-        <input type="button" onclick="addOption()" value="  +  "/>
-        <input type="button" onclick="getImage();" value="Submit" />
+        <input type="button" class="btn btn-primary" onclick="addOption()" value="  +  " />
+        <input type="button" class="btn btn-success" onclick="getImage();" value="Submit" />
     </div>
     <div class="margined">
         
@@ -37,6 +41,8 @@
 @section scripts
 {
     <script type="text/javascript">
+        //Cheap way to do formatting of all objects
+
         function getImage() {
             var textData = [];
             var inputDivs = $('#options').children();
@@ -54,18 +60,18 @@
         function addOption() {
             $('#options').append(
                 $('<div class="margined"></div>').prop('id', 'option' + inputId)
-                .append($('<input type="text" class="margined" value="New Test"/>').prop('id', "textBox" + inputId))
-                .append($('<select>' +
+                .append($('<input type="text" class="margined form-control" value="New Test"/>').prop('id', "textBox" + inputId))
+                .append($('<select class="form-control">' +
                     '<option>Red</option></option>' +
                     '<option>Green</option></option>' +
                     '<option>Blue</option></option>' +
                     '<option value="Black">Plain</option>' +
                     '</select>').prop('id', 'selectBox' + inputId))
-                .append($('<input type="button" "class="margined" value="  -  "/>')
+                .append($('<input type="button" class="margined btn btn-danger" value="  -  "/>')
                     .click({ inputId: inputId }, function (e) { $('#option' + e.data.inputId).remove(); }))
-        );
-        inputId++;
-    }
+            );
+            inputId++;
+        }
 
         addOption();
         addOption();
