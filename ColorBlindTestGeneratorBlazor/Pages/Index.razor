@@ -1,0 +1,91 @@
+﻿@page "/"
+@inject HttpClient Http
+
+<PageTitle>CVD Test Generator</PageTitle>
+
+<h2>CVD Test Generator</h2>
+
+<div id="divSetup">
+    <div id="options">
+         @foreach (var (option, i) in options.Select((o, i) => (o,i)))
+        {
+            <div class="margined">
+                <input type="text" class="margined form-control" value="@option.Text"/>
+                <select class="form-control" value="@option.Color">
+                    <option>Red</option>
+                    <option>Green</option>
+                    <option>Blue</option>
+                    <option value="Black">Plain</option>
+                </select>
+                <input type="button" class="margined btn btn-danger"  @onclick="() => RemoveOption(i)" value="  -  "/>
+            </div>
+        }
+     </div>
+    <div class="margined">
+        <input type="button" class="btn btn-primary" @onclick="AddOption" value="  +  "/>
+        <input type="button" class="btn btn-success" @onclick="GetImage" value="Submit" />
+    </div>
+</div>
+<div id="divResult" class="margined">
+    <img src="@imageBase64" />
+</div>
+<hr />
+
+@code {
+    private string imageBase64 = "";
+    private List<TextDataModel> options = new List<TextDataModel>
+    {
+        new TextDataModel("Red Test", "Red"),
+        new TextDataModel("Green Test", "Green"),
+        new TextDataModel("Blue Test", "Blue"),
+        new TextDataModel("Text", "Black"),
+    };
+
+    private void AddOption()
+    {
+        options.Add(new TextDataModel("New Test", "Red"));
+    }
+
+    private void RemoveOption(int i)
+    {
+        options.RemoveAt(i);
+    }
+
+    private async Task GetImage()
+    {
+        var data = options.ToList();
+
+        if (data.Count == 0)
+            data = new List<TextDataModel>
+            {
+                new TextDataModel {Color = "Black", Text = "No options selected!"},
+                new TextDataModel {Color = "Black", Text = "Are you trying to break it?"}
+            };
+
+        var encoder = new SixLabors.ImageSharp.Formats.Png.PngEncoder();
+
+        using var stream = new MemoryStream();
+        var image = await ImageCreation.CreateImage(data, Http);
+
+        image.Save(stream, encoder);
+
+        imageBase64 = "data:image/png;base64, " + Convert.ToBase64String(stream.ToArray());
+    }
+}
+
+<style>
+    .margined {
+        margin: 10px;
+    }
+    #divSetup {
+        display: inline-block;
+    }
+    #divResult {
+        display: inline-block;
+        vertical-align: top;
+    }
+    .form-control {
+        display: inline-block;
+        width: inherit;
+    }
+</style>
