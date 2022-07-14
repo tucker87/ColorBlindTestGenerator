@@ -48,7 +48,7 @@ namespace ColorBlindTestGenerator.Models
             {
                 if (!_collection.TryGet("Tahoma", out var family))
                 {
-                    var fontFileStream = await _http.GetStreamAsync("TAHOMABD.ttf");
+                    var fontFileStream = await _http.GetStreamAsync("TAHOMABD.TTF");
                     _collection.Add(fontFileStream);
                     family = _collection.Get("Tahoma");
                 }
