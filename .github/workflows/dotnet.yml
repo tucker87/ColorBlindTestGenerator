@@ -20,7 +20,7 @@ jobs:
     - name: Publish
       run: dotnet publish ./ColorBlindTestGeneratorBlazor/ColorBlindTestGeneratorBlazor.csproj -c Release -o release --nologo
     
-    - name: Change base-tag in index.html from / to BlazorGitHubPagesDemo
+    - name: Change base-tag in index.html from / to ColorBlindTestGenerator
       run: sed -i 's/<base href="\/" \/>/<base href="\/ColorBlindTestGenerator\/" \/>/g' release/wwwroot/index.html
     
     - name: copy index.html to 404.html
